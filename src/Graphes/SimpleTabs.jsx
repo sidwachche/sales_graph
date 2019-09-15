@@ -67,10 +67,11 @@ export default function SimpleTabs() {
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
-        <PieChart></PieChart>
         <OverallSales></OverallSales>
       </TabPanel>
-      <TabPanel value={value} index={1}></TabPanel>
+      <TabPanel value={value} index={1}>
+        <PieChart></PieChart>
+      </TabPanel>
     </div>
   );
 }

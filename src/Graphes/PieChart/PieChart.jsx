@@ -17,8 +17,10 @@ export default function PieChart() {
   const classes = useStyles();
   const [option, setOption] = useState(defaultPieOpt);
   const [selectedType, setSelectedType] = useState('GeographicalID');
+  const [selectedInfo, setSelectedInfo] = useState('Selected : GeographicalID');
   useEffect(() => {
     setOption(pieOptions(selectedType));
+    setSelectedInfo('Selected : ' + selectedType);
   }, [selectedType]);
   return (
     <>
@@ -45,6 +47,7 @@ export default function PieChart() {
       >
         DemoGraphic
       </Button>
+      <h2>{selectedInfo}</h2>
       <HighchartsReact highcharts={Highcharts} options={option} />
     </>
   );
