@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import HighchartsReact from 'highcharts-react-official';
 import Highcharts from 'highcharts';
 import drilldown from 'highcharts/modules/drilldown.js';

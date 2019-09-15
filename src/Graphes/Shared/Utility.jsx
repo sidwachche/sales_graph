@@ -1,6 +1,5 @@
 import data from '../../Data/data';
 import weeks from '../../Data/week';
-import dummy from '../../Data/dummy';
 
 export function getInitialData() {
   const allStores = new Set();
@@ -21,7 +20,6 @@ export function getInitialData() {
 
 export function deriveOptionFromStore(storeId) {
   let array = Object.values(data.find(item => item.StoreID == storeId));
-  console.log(array);
   let seriesData = [];
   for (let i = 0; i < array.length; i++) {
     if (i < 3) {
@@ -29,7 +27,6 @@ export function deriveOptionFromStore(storeId) {
     }
     seriesData.push(Number(array[i]));
   }
-  console.log(seriesData);
   return {
     title: {
       text: 'Overall Sales'
@@ -40,11 +37,9 @@ export function deriveOptionFromStore(storeId) {
     series: [{ data: seriesData }]
   };
 }
-
-export function deriveOptionFromGeoDemo(id, type) {
-  let array = data.filter(item => item[type] == id);
-
-  let seriesData = array
+export function consolidatedGeoDemo(id, type) {
+  return data
+    .filter(item => item[type] == id)
     .reduce((acc, cur) => {
       Object.values(cur).map((ele, index) => {
         if (isNaN(acc[index]) && index > 2) {
@@ -56,7 +51,8 @@ export function deriveOptionFromGeoDemo(id, type) {
       return acc;
     }, [])
     .slice(3);
-  console.log(seriesData);
+}
+export function deriveOptionFromGeoDemo(id, type) {
   return {
     title: {
       text: 'Overall Sales'
@@ -64,7 +60,7 @@ export function deriveOptionFromGeoDemo(id, type) {
     xAxis: {
       categories: weeks
     },
-    series: [{ data: seriesData }]
+    series: [{ data: consolidatedGeoDemo(id, type) }]
   };
 }
 export const defaultOpt = {
@@ -81,4 +77,81 @@ export const defaultInitialData = {
   allStores: [],
   allGeoId: [],
   allDemoId: []
+};
+function getSum(arr) {
+  return Object.values(arr)
+    .slice(3)
+    .reduce((acc, cur) => Number(acc) + Number(cur), 0);
+}
+export function pieDataGeoDemo(type) {
+  return data.reduce((acc, cur) => {
+    let sum = getSum(cur);
+    let foundIndex = acc.findIndex(item => item.name == cur[type]);
+    if (foundIndex > -1) {
+      acc[foundIndex].y += sum;
+    } else {
+      let obj = {};
+      obj.name = cur[type];
+      obj.y = sum;
+      acc.push(obj);
+    }
+    return acc;
+  }, []);
+}
+export function pieStoreDataGeo() {
+  let arr = data.map(item => {
+    return { name: item.StoreID, y: getSum(item) };
+  });
+  arr.sort((a, b) => {
+    if (a.y > b.y) return -1;
+    if (a.y < b.y) return 1;
+    return 0;
+  });
+  return arr.slice(0, 5);
+}
+
+export function pieOptions(type) {
+  let opt =
+    type === 'Stores'
+      ? pieStoreDataGeo()
+      : pieDataGeoDemo(type).filter(item => item.y !== 0);
+  return {
+    ...defaultPieOpt,
+    series: [
+      {
+        name: 'Brands',
+        colorByPoint: true,
+        data: opt
+      }
+    ]
+  };
+}
+
+export const defaultPieOpt = {
+  chart: {
+    type: 'pie'
+  },
+  title: {
+    text: 'Top Performers'
+  },
+  tooltip: {
+    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+  },
+  plotOptions: {
+    pie: {
+      allowPointSelect: true,
+      cursor: 'pointer',
+      dataLabels: {
+        enabled: true,
+        format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+      }
+    }
+  },
+  series: [
+    {
+      name: 'Brands',
+      colorByPoint: true,
+      data: []
+    }
+  ]
 };

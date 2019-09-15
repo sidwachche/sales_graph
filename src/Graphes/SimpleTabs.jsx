@@ -63,19 +63,14 @@ export default function SimpleTabs() {
           aria-label="simple tabs example"
         >
           <Tab label="Overall Sales" {...a11yProps(0)} />
-          <Tab label="Item Two" {...a11yProps(1)} />
-          <Tab label="Pie Chart" {...a11yProps(2)} />
+          <Tab label="Pie Chart" {...a11yProps(1)} />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
+        <PieChart></PieChart>
         <OverallSales></OverallSales>
       </TabPanel>
-      <TabPanel value={value} index={1}>
-        Item Two
-      </TabPanel>
-      <TabPanel value={value} index={2}>
-        <PieChart></PieChart>
-      </TabPanel>
+      <TabPanel value={value} index={1}></TabPanel>
     </div>
   );
 }
